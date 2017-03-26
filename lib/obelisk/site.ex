@@ -49,9 +49,46 @@ defmodule Obelisk.Site do
   end
 
   defp update_gitignore do
-    File.open("./.gitignore", [:append], fn(file) ->
-      IO.binwrite(file, "\n/build\n")
-    end)
+    gitignore_lines = ["/build"]
+
+    {:ok, io_device} = File.open("./.gitignore", [:read])
+
+    is_found = gitignore_lines
+    |> hd
+    |> (&find_in_gitignore(io_device, &1)).()
+
+    File.close(io_device)
+
+    unless is_found do
+      File.open("./.gitignore", [:append], fn(file) ->
+        append_gitignore(file, gitignore_lines)
+      end)
+    end
+  end
+
+  defp find_in_gitignore(io_device, match) do
+    line = IO.read(io_device, :line)
+
+    if is_binary(line) do
+      line = String.trim(line)
+    end
+    
+    case 1 do
+      _ when line == match -> true
+      _ when is_tuple(line) -> false
+      :eof -> false
+      _ -> find_in_gitignore(io_device, match)
+    end
+  end
+  
+  defp append_gitignore(io_device, [head | tail]) do
+    IO.write(io_device, "\n#{head}")
+
+    if Enum.empty?(tail) do
+      IO.write(io_device, "\n")
+    else
+      append_gitignore(io_device, tail)
+    end
   end
 
 end
