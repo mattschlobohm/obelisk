@@ -21,7 +21,7 @@ defmodule Obelisk.Mixfile do
 
   defp deps do
     [{:yamerl, github: "yakaz/yamerl"},
-     {:earmark, "~> 0.1.15"},
+     {:earmark, "~> 1.2.2"},
      {:chronos, "~> 1.0.0"},
      {:cowboy, "~> 1.1"},
      {:plug, "~> 1.3"},

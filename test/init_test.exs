@@ -36,6 +36,6 @@ defmodule InitTaskTest do
     assert File.exists?(".gitignore")
     { :ok, file } = File.read(".gitignore")
 
-    assert String.match?(file, ~r/build\n\z/)
+    assert String.match?(file, ~r/^\/build$/m)
   end
 end

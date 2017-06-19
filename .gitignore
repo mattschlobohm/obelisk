@@ -1,3 +1,6 @@
+*.iml
+.idea
+
 /_build
 /deps
 erl_crash.dump
@@ -11,3 +14,4 @@ erl_crash.dump
 /layout
 site.yml
 /themes
+/build/build/build/build/build/build/build/build/build/build

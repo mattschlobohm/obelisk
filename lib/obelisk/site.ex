@@ -1,11 +1,12 @@
 defmodule Obelisk.Site do
 
   def initialize do
+    File.touch ".gitignore"
     create_default_theme
     create_content_dirs
     Obelisk.Post.create("Welcome to Obelisk")
     File.write './site.yml', Obelisk.Templates.config
-
+    
     update_gitignore
   end
 
@@ -48,22 +49,15 @@ defmodule Obelisk.Site do
     File.write "./themes/default/layout/page.eex", Obelisk.Templates.page_template
   end
 
+  @gitignore_patterns ~w[/build]
+  defp current_gitignore_patterns do
+    File.stream!(".gitignore")
+    |> Enum.map(&String.trim/1)
+  end
+  
   defp update_gitignore do
-    gitignore_lines = ["/build"]
-
-    {:ok, io_device} = File.open("./.gitignore", [:read])
-
-    is_found = gitignore_lines
-    |> hd
-    |> (&find_in_gitignore(io_device, &1)).()
-
-    File.close(io_device)
-
-    unless is_found do
-      File.open("./.gitignore", [:append], fn(file) ->
-        append_gitignore(file, gitignore_lines)
-      end)
-    end
+    (@gitignore_patterns -- current_gitignore_patterns())
+    |> Enum.into(File.stream!(".gitignore", [:append]))
   end
 
   defp find_in_gitignore(io_device, match) do
